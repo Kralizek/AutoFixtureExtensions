@@ -1,0 +1,55 @@
+max_jobs: 1
+
+image: Visual Studio 2019
+
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: qgQXzXhFARJ2oI6nhEQFri1M59G9KYzmEzJ2hQaOaa3ssTMLuYlXDAAnkdg5n/GZ
+  MYGET_TOKEN:
+    secure: yP12k1vrHJyValU1UWnW3NySjKfXlRomR8p4qqmYs26FDztsGMlCQeT5jdCVHlz6
+
+cache:
+  - '%LocalAppData%\NuGet\v3-cache'
+
+only_commits:
+  files:
+    - src/
+    - templates/
+
+nuget:
+  account_feed: false
+  project_feed: false
+  disable_publish_on_pr: true
+
+install:
+  - cmd: dotnet tool install -g Cake.Tool --version 0.34.1
+  - cmd: dotnet tool install coveralls.net --tool-path tools
+
+build_script:
+  - cmd: dotnet cake --target=Full
+
+after_build:
+  - ps: if ($env:COVERALLS_REPO_TOKEN -ne $null) { .\tools\csmacnz.coveralls.exe --reportgenerator -i .\outputs\tests\report --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID }
+
+test: off
+
+artifacts:
+  - path: outputs\*.nupkg
+    name: packages
+  - path: outputs\*.snupkg
+    name: symbols
+  - path: outputs\tests\report
+    name: report
+    type: zip
+
+deploy:
+  - provider: NuGet
+    server: https://www.myget.org/F/kralizek/api/v2/package
+    api_key:
+      secure: SxuPZ1GdSw4IgdN1KHN9Ky36oUY5ZRT0ZZXd1BdDr+GgktRazqBz6dLcjA56++X/
+    artifact: packages
+  - provider: Environment
+    name: NuGet
+    on:
+      branch: master
+      appveyor_repo_tag: true
