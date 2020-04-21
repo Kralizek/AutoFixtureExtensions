@@ -11,11 +11,6 @@ environment:
 cache:
   - '%LocalAppData%\NuGet\v3-cache'
 
-only_commits:
-  files:
-    - src/
-    - templates/
-
 nuget:
   account_feed: false
   project_feed: false
