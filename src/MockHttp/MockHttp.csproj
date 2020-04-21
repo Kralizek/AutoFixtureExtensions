@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Renato Golia;Andrei Ivascu</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Kralizek.AutoFixture.Extensions.MockHttp</PackageId>
+    <PackageTags>autofixture;unit testing;test;mock;httpClient;mockhttp</PackageTags>
+    <Description>An extension to AutoFixture to easily work with MockHttp.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.11.0" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>
