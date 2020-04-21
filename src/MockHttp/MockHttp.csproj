@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Renato Golia;Andrei Ivascu</Authors>
+    <AssemblyName>Kralizek.AutoFixture.Extensions.MockHttp</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
