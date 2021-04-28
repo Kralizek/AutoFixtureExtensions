@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageTags>autofixture;unit testing;test;mock;aspnetcore;aspnetcoremvc;aspnetcoremvctesting</PackageTags>
+    <Description>An extension to AutoFixture to easily test ASP.NET Core applications.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.*" />
+  </ItemGroup>
+
+</Project>
