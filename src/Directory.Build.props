@@ -1,8 +1,10 @@
 
 <Project>
   <PropertyGroup>
-    <RootNamespace>AutoFixture</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <RootNamespace>Kralizek.AutoFixture.Extensions</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>$(RootNamespace).$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,6 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Kralizek/AutoFixtureExtensions</PackageProjectUrl>
     <NoWarn>NU5105,NU5125,NU5048</NoWarn>
+    <PackageId>$(AssemblyName)</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
