@@ -12,8 +12,11 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
         public MockAsyncStreamReader(IEnumerable<T> data)
         {
-            _enumerator = data?.GetEnumerator() ?? throw new ArgumentNullException(nameof(data));
+            Data = data ?? throw new ArgumentNullException(nameof(data));
+            _enumerator = Data.GetEnumerator();
         }
+
+        public IEnumerable<T> Data { get; }
 
         public Task<bool> MoveNext(CancellationToken cancellationToken) => Task.FromResult(_enumerator.MoveNext());
 

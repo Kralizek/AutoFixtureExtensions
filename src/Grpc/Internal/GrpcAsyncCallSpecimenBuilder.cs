@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture.Kernel;
 using Grpc.Core;
@@ -9,19 +8,32 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 {
     public class GrpcAsyncCallSpecimenBuilder : ISpecimenBuilder
     {
-        private static readonly CallParameters DefaultCallParameters = new CallParameters(Task.FromResult(new Metadata()), () => Status.DefaultSuccess, () => new Metadata(), () => {});
-
-        public object Create(object request, ISpecimenContext context) => request switch
+        private readonly CallParameters _callParameters;
+        
+        public GrpcAsyncCallSpecimenBuilder(CallParameters callParameters)
         {
-            null => throw new ArgumentNullException(nameof(request)),
-            Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncServerStreamingCall<>) => CreateAsyncServerStreamingCall(type, context),
-            Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncUnaryCall<>) => CreateAsyncUnaryCall(type, context),
-            Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncClientStreamingCall<,>) => CreateAsyncClientStreamingCall(type, context),
-            Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncDuplexStreamingCall<,>) => CreateAsyncDuplexStreamingCall(type, context),
-            _ => new NoSpecimen()
-        };
+            _callParameters = callParameters ?? throw new ArgumentNullException(nameof(callParameters));
+        }
 
-        private static object CreateAsyncServerStreamingCall(Type type, ISpecimenContext context)
+        public object Create(object request, ISpecimenContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return request switch
+            {
+                null => throw new ArgumentNullException(nameof(request)),
+                Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncServerStreamingCall<>) => CreateAsyncServerStreamingCall(type, context, _callParameters),
+                Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncUnaryCall<>) => CreateAsyncUnaryCall(type, context, _callParameters),
+                Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncClientStreamingCall<,>) => CreateAsyncClientStreamingCall(type, context, _callParameters),
+                Type { IsGenericType: true } type when type.GetGenericTypeDefinition() == typeof(AsyncDuplexStreamingCall<,>) => CreateAsyncDuplexStreamingCall(type, context, _callParameters),
+                _ => new NoSpecimen()
+            };
+        }
+
+        private static object CreateAsyncServerStreamingCall(Type type, ISpecimenContext context, CallParameters callParameters)
         {
             var typeArgument = type.GenericTypeArguments[0];
 
@@ -31,12 +43,12 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var method = typeof(TestCalls).GetMethod(nameof(TestCalls.AsyncServerStreamingCall)).MakeGenericMethod(typeArgument);
 
-            var result = method.Invoke(null, new[] { responseStream, DefaultCallParameters.ResponseHeaders, DefaultCallParameters.Status, DefaultCallParameters.Trailers, DefaultCallParameters.DisposeAction });
+            var result = method.Invoke(null, new[] { responseStream, callParameters.ResponseHeaders, callParameters.Status, callParameters.Trailers, callParameters.DisposeAction });
 
             return result;
         }
 
-        private static object CreateAsyncUnaryCall(Type type, ISpecimenContext context)
+        private static object CreateAsyncUnaryCall(Type type, ISpecimenContext context, CallParameters callParameters)
         {
             var responseType = type.GenericTypeArguments[0];
 
@@ -46,12 +58,12 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var taskResult = typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(responseType).Invoke(null, new[] { callResult });
 
-            var result = method.Invoke(null, new object[] { taskResult, DefaultCallParameters.ResponseHeaders, DefaultCallParameters.Status, DefaultCallParameters.Trailers, DefaultCallParameters.DisposeAction });
+            var result = method.Invoke(null, new object[] { taskResult, callParameters.ResponseHeaders, callParameters.Status, callParameters.Trailers, callParameters.DisposeAction });
 
             return result;
         }
 
-        private static object CreateAsyncClientStreamingCall(Type type, ISpecimenContext context)
+        private static object CreateAsyncClientStreamingCall(Type type, ISpecimenContext context, CallParameters callParameters)
         {
             var requestType = type.GenericTypeArguments[0];
 
@@ -65,12 +77,12 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var taskResult = typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(responseType).Invoke(null, new[] { callResult });
 
-            var result = method.Invoke(null, new object[] { requestStream, taskResult, DefaultCallParameters.ResponseHeaders, DefaultCallParameters.Status, DefaultCallParameters.Trailers, DefaultCallParameters.DisposeAction });
+            var result = method.Invoke(null, new object[] { requestStream, taskResult, callParameters.ResponseHeaders, callParameters.Status, callParameters.Trailers, callParameters.DisposeAction });
 
             return result;
         }
 
-        private static object CreateAsyncDuplexStreamingCall(Type type, ISpecimenContext context)
+        private static object CreateAsyncDuplexStreamingCall(Type type, ISpecimenContext context, CallParameters callParameters)
         {
             var requestType = type.GenericTypeArguments[0];
 
@@ -82,7 +94,7 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var responseStream = context.Resolve(typeof(IAsyncStreamReader<>).MakeGenericType(responseType));
 
-            var result = method.Invoke(null, new object[] { requestStream, responseStream, DefaultCallParameters.ResponseHeaders, DefaultCallParameters.Status, DefaultCallParameters.Trailers, DefaultCallParameters.DisposeAction });
+            var result = method.Invoke(null, new object[] { requestStream, responseStream, callParameters.ResponseHeaders, callParameters.Status, callParameters.Trailers, callParameters.DisposeAction });
 
             return result;
         }

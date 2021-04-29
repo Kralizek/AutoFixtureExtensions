@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\helpers\AspNetCore\TestWebSite\TestWebSite.csproj" />
     <ProjectReference Include="..\..\src\AspNetCore.WebApplicationFactory\AspNetCore.WebApplicationFactory.csproj" />
-    <ProjectReference Include="..\..\helpers\TestWebSite\TestWebSite.csproj" />
   </ItemGroup>
 
   <ItemGroup>

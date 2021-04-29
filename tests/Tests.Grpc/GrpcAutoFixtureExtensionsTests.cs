@@ -1,5 +1,6 @@
 using AutoFixture;
 using Grpc.Core;
+using Grpc.Core.Testing;
 using Kralizek.AutoFixture.Extensions.Internal;
 using NUnit.Framework;
 
@@ -8,9 +9,9 @@ namespace Tests
     public class GrpcAutoFixtureExtensionsTests
     {
         [Test, CustomAutoData]
-        public void AddGrpc_registers_customization(IFixture fixture)
+        public void AddGrpcSupport_registers_customization(IFixture fixture)
         {
-            fixture.AddGrpc();
+            fixture.AddGrpcSupport();
 
             Assert.Multiple(() =>
             {
@@ -23,6 +24,8 @@ namespace Tests
                 Assert.That(() => fixture.Create<AsyncServerStreamingCall<string>>(), Throws.Nothing);
 
                 Assert.That(() => fixture.Create<AsyncDuplexStreamingCall<string, string>>(), Throws.Nothing);
+
+                Assert.That(fixture.Create<ServerCallContext>(), Is.Not.Null);
             });
         }
     }
