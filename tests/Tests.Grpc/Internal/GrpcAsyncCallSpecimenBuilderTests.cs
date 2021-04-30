@@ -1,6 +1,8 @@
 ﻿using System;
+using AutoFixture;
 using AutoFixture.Idioms;
 using AutoFixture.Kernel;
+using AutoFixture.NUnit3;
 using Grpc.Core;
 using Kralizek.AutoFixture.Extensions.Internal;
 using NUnit.Framework;
@@ -31,6 +33,17 @@ namespace Tests.Internal
             var result = sut.Create(typeof(object), context);
 
             Assert.That(result, Is.InstanceOf<NoSpecimen>());
+        }
+
+        [Test]
+        [InlineAutoData(typeof(AsyncClientStreamingCall<HelloRequest, HelloReply>))]
+        [InlineAutoData(typeof(AsyncServerStreamingCall<HelloReply>))]
+        [InlineAutoData(typeof(AsyncDuplexStreamingCall<HelloRequest, HelloReply>))]
+        public void Create_throws_if_required_dependencies_are_missing(Type type, GrpcAsyncCallSpecimenBuilder sut, IFixture fixture)
+        {
+            fixture.Customizations.Add(sut);
+
+            Assert.That(() => fixture.Create(type, new SpecimenContext(fixture)), Throws.Exception);
         }
     }
 }
