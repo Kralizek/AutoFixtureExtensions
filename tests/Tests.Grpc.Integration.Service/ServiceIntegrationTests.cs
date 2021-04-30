@@ -61,5 +61,16 @@ namespace Tests
 
             Mock.Get(responseStream).Verify(p => p.WriteAsync(It.Is<HelloReply>(r => r.Message.EndsWith(name))), Times.Exactly(10));
         }
+
+        [Test, ServiceAutoData]
+        public async Task Service_greets_sender_duplex(GreeterService sut, ServerCallContext context, [Frozen] IEnumerable<HelloRequest> requests, IAsyncStreamReader<HelloRequest> requestStream, IServerStreamWriter<HelloReply> responseStream)
+        {
+            await sut.SayHelloDuplex(requestStream, responseStream, context);
+
+            foreach (var req in requests)
+            {
+                Mock.Get(responseStream).Verify(p => p.WriteAsync(It.Is<HelloReply>(r => r.Message.EndsWith(req.Name))), Times.Once());
+            }
+        }
     }
 }

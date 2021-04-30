@@ -13,19 +13,30 @@ namespace TestGrpcClient
         {
             var services = new ServiceCollection();
 
-            services.AddTransient<Service>();
+            services.AddTransient<IService, Service>();
 
             services.AddGrpcClient<Greeter.GreeterClient>();
 
             var serviceProvider = services.BuildServiceProvider();
 
-            var test = serviceProvider.GetRequiredService<Service>();
+            var test = serviceProvider.GetRequiredService<IService>();
 
             await test.SayHello("Hello");
         }
     }
 
-    public class Service
+public interface IService
+{
+    Task<string> SayHello(string name);
+
+    Task<string> StreamHellos(IEnumerable<string> names);
+
+    IAsyncEnumerable<string> ReceiveHelloStream(string name);
+
+    IAsyncEnumerable<string> HelloDuplex(IEnumerable<string> names);
+}
+
+    public class Service : IService
     {
         private readonly Greeter.GreeterClient _client;
 
