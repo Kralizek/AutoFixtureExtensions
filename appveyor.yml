@@ -57,12 +57,3 @@ deploy:
     api_key:
       secure: SxuPZ1GdSw4IgdN1KHN9Ky36oUY5ZRT0ZZXd1BdDr+GgktRazqBz6dLcjA56++X/
     artifact: packages
-  - provider: GitHub
-    on:
-      branch:
-        - master
-        - main
-      appveyor_repo_tag: true
-    auth_token:
-      secure: Qv4tMB9BvNni2+v69vK38jQq2ga1+GiI/YqCWkiA1fZN72v2NtaZo6UpwmXQNkop
-    artifact: /.*.nupkg/
