@@ -23,7 +23,7 @@ Assert.That(responseContent, Is.EqualTo(message));
 
 ## Usage with `AutoData`
 
-Alternatively, you can use a customized version of the `AutoData` attribute to improve the readibility of your unit tests.
+Alternatively, you can use a customized version of the `AutoData` attribute to improve the readability of your unit tests.
 
 ```csharp
 [AttributeUsage(AttributeTargets.Method)]

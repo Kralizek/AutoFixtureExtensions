@@ -37,9 +37,12 @@ namespace Kralizek.AutoFixture.Extensions.Internal
         {
             var typeArgument = type.GenericTypeArguments[0];
 
-            var asyncStreamReaderType = typeof(IAsyncStreamReader<>).MakeGenericType(typeArgument);
+            var responseStreamType = typeof(IAsyncStreamReader<>).MakeGenericType(typeArgument);
 
-            var responseStream = context.Resolve(asyncStreamReaderType);
+            if (!context.TryResolve(responseStreamType, out var responseStream) || responseStream is null)
+            {
+                throw new Exception($"Unable to resolve {responseStreamType}");
+            }
 
             var method = typeof(TestCalls).GetMethod(nameof(TestCalls.AsyncServerStreamingCall)).MakeGenericMethod(typeArgument);
 
@@ -54,7 +57,10 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var method = typeof(TestCalls).GetMethod(nameof(TestCalls.AsyncUnaryCall)).MakeGenericMethod(responseType);
 
-            var callResult = context.Resolve(responseType);
+            if (!context.TryResolve(responseType, out var callResult) || callResult is null)
+            {
+                throw new Exception($"Unable to resolve {responseType}");
+            }
 
             var taskResult = typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(responseType).Invoke(null, new[] { callResult });
 
@@ -71,9 +77,17 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var method = typeof(TestCalls).GetMethod(nameof(TestCalls.AsyncClientStreamingCall)).MakeGenericMethod(requestType, responseType);
 
-            var requestStream = context.Resolve(typeof(IClientStreamWriter<>).MakeGenericType(requestType));
+            var requestStreamType = typeof(IClientStreamWriter<>).MakeGenericType(requestType);
 
-            var callResult = context.Resolve(responseType);
+            if (!context.TryResolve(requestStreamType, out var requestStream) || requestStream is null)
+            {
+                throw new Exception($"Unable to resolve {requestStreamType}");
+            }
+
+            if (!context.TryResolve(responseType, out var callResult) || callResult is null)
+            {
+                throw new Exception($"Unable to resolve {responseType}");
+            }
 
             var taskResult = typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(responseType).Invoke(null, new[] { callResult });
 
@@ -90,9 +104,19 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
             var method = typeof(TestCalls).GetMethod(nameof(TestCalls.AsyncDuplexStreamingCall)).MakeGenericMethod(requestType, responseType);
 
-            var requestStream = context.Resolve(typeof(IClientStreamWriter<>).MakeGenericType(requestType));
+            var requestStreamType = typeof(IClientStreamWriter<>).MakeGenericType(requestType);
 
-            var responseStream = context.Resolve(typeof(IAsyncStreamReader<>).MakeGenericType(responseType));
+            if (!context.TryResolve(requestStreamType, out var requestStream) || requestStream is null)
+            {
+                throw new Exception($"Unable to resolve {requestStreamType}");
+            }
+
+            var responseStreamType = typeof(IAsyncStreamReader<>).MakeGenericType(responseType);
+
+            if (!context.TryResolve(responseStreamType, out var responseStream) || responseStream is null)
+            {
+                throw new Exception($"Unable to resolve {responseStreamType}");
+            }
 
             var result = method.Invoke(null, new object[] { requestStream, responseStream, callParameters.ResponseHeaders, callParameters.Status, callParameters.Trailers, callParameters.DisposeAction });
 
@@ -118,5 +142,4 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
         public Action DisposeAction { get; }
     }
-
 }
