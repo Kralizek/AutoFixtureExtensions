@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net48;net5.0</TargetFrameworks>
+	<TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -9,10 +9,12 @@
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MockHttp\MockHttp.csproj" />
+    <ProjectReference Include="..\..\helpers\Grpc\TestGrpcClient\TestGrpcClient.csproj" />
+    <ProjectReference Include="..\..\src\Grpc\Grpc.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net48;net5.0</TargetFrameworks>
+	<TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MockHttp\MockHttp.csproj" />
+    <ProjectReference Include="..\..\helpers\Grpc\TestGrpcService\TestGrpcService.csproj" />
+    <ProjectReference Include="..\..\src\Grpc\Grpc.csproj" />
   </ItemGroup>
 
 </Project>

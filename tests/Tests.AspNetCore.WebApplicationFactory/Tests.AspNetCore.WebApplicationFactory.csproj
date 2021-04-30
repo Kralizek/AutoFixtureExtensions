@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net48;net5.0</TargetFrameworks>
+    <TargetFrameworks>net5.0</TargetFrameworks>
+
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -12,7 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MockHttp\MockHttp.csproj" />
+    <ProjectReference Include="..\..\helpers\AspNetCore\TestWebSite\TestWebSite.csproj" />
+    <ProjectReference Include="..\..\src\AspNetCore.WebApplicationFactory\AspNetCore.WebApplicationFactory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Integration\" />
   </ItemGroup>
 
 </Project>

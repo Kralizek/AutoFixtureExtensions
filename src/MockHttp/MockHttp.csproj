@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Renato Golia;Andrei Ivascu</Authors>
-    <AssemblyName>Kralizek.AutoFixture.Extensions.MockHttp</AssemblyName>
+    <RootNamespace>AutoFixture</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Kralizek.AutoFixture.Extensions.MockHttp</PackageId>
     <PackageTags>autofixture;unit testing;test;mock;httpClient;mockhttp</PackageTags>
     <Description>An extension to AutoFixture to easily work with MockHttp.</Description>
   </PropertyGroup>
