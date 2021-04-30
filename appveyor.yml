@@ -7,6 +7,7 @@ environment:
     secure: qgQXzXhFARJ2oI6nhEQFri1M59G9KYzmEzJ2hQaOaa3ssTMLuYlXDAAnkdg5n/GZ
   MYGET_TOKEN:
     secure: yP12k1vrHJyValU1UWnW3NySjKfXlRomR8p4qqmYs26FDztsGMlCQeT5jdCVHlz6
+  CAKE_SETTINGS_SKIPPACKAGEVERSIONCHECK: "true"
 
 cache:
   - '%LocalAppData%\NuGet\v3-cache'
@@ -17,14 +18,13 @@ nuget:
   disable_publish_on_pr: true
 
 install:
-  - cmd: dotnet tool install -g Cake.Tool --version 0.34.1
-  - cmd: dotnet tool install coveralls.net --tool-path tools
+  - cmd: dotnet tool restore
 
 build_script:
   - cmd: dotnet cake --target=Full
 
 after_build:
-  - ps: if ($env:COVERALLS_REPO_TOKEN -ne $null) { .\tools\csmacnz.coveralls.exe --reportgenerator -i .\outputs\tests\report --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID }
+  - ps: if ($env:COVERALLS_REPO_TOKEN -ne $null) { dotnet csmacnz.Coveralls --reportgenerator -i .\outputs\tests\report --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID }
 
 test: off
 
@@ -38,13 +38,31 @@ artifacts:
     type: zip
 
 deploy:
+  - provider: Environment
+    name: NuGet
+    on:
+      branch:
+        - master
+        - main
+      appveyor_repo_tag: true
+  - provider: Environment
+    name: GitHub Packages - Kralizek
+    on:
+      branch:
+        - master
+        - main
+      appveyor_repo_tag: true
   - provider: NuGet
     server: https://www.myget.org/F/kralizek/api/v2/package
     api_key:
       secure: SxuPZ1GdSw4IgdN1KHN9Ky36oUY5ZRT0ZZXd1BdDr+GgktRazqBz6dLcjA56++X/
     artifact: packages
-  - provider: Environment
-    name: NuGet
+  - provider: GitHub
     on:
-      branch: master
+      branch:
+        - master
+        - main
       appveyor_repo_tag: true
+    auth_token:
+      secure: Qv4tMB9BvNni2+v69vK38jQq2ga1+GiI/YqCWkiA1fZN72v2NtaZo6UpwmXQNkop
+    artifact: /.*.nupkg/
