@@ -15,7 +15,7 @@ namespace TestGrpc
             _logger = logger;
         }
 
-        static string FormatMessage(string name) => $"Hello {name}";
+        public static string FormatMessage(string name) => $"Hello {name}";
 
         public override Task<HelloReply> SayHelloUnary(HelloRequest request, ServerCallContext context)
         {

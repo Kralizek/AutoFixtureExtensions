@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Grpc.Server\Grpc.Server.csproj" />
+    <ProjectReference Include="..\Tests.Grpc.Integration.Service\Tests.Grpc.Integration.Service.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="..\..\helpers\Grpc\Protos\greet.proto" GrpcServices="Client" ProtoRoot="..\..\helpers\Grpc\Protos" />
+		<PackageReference Include="Grpc.Tools" Version="2.37.0" PrivateAssets="All" />
+	</ItemGroup>
+
+</Project>

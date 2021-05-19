@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageTags>autofixture;unit testing;test;mock;aspnetcore;grpc;grpc services</PackageTags>
+		<Description>An extension to AutoFixture to easily test ASP.NET Core applications hosting GRPC services.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoFixture" Version="4.11.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.*" />
+		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.37.0" />
+	</ItemGroup>
+
+</Project>

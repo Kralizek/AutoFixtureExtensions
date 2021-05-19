@@ -13,5 +13,8 @@ The following packages are available:
 * **[Kralizek.AutoFixture.Extensions.Grpc](src/Grpc)**<br/>
   An integration between AutoFixture and [Grpc.Core.Testing](https://www.nuget.org/packages/Grpc.Core.Testing/) to test GRPC services and components consuming GRPC clients.
 
+* **[Kralizek.AutoFixture.Extensions.Grpc.Server](src/Grpc.Server)**<br/>
+  An integration between AutoFixture, [Grpc.Core.Testing](https://www.nuget.org/packages/Grpc.Core.Testing/) and [Microsoft.AspNetCore.Mvc.Testing](https://www.nuget.org/packages/Microsoft.AspNetCore.Mvc.Testing) to test GRPC services hosted by ASP.NET Core applications.
+
 ## License
 The content of this repository is licensed under the [MIT license](https://github.com/Kralizek/AutoFixtureExtensions/blob/master/LICENSE.txt).
