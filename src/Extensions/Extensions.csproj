@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <PackageId>$(AssemblyName)</PackageId>
     <PackageTags>autofixture;unit testing;test;extensions</PackageTags>
     <Description>An extension package to AutoFixture to contains helpers without any extra dependency.</Description>
   </PropertyGroup>
