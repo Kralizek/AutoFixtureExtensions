@@ -8,6 +8,15 @@ namespace Kralizek.AutoFixture.Extensions.Kernel
 {
     public class AsyncEnumerableSpecimenBuilder : ISpecimenBuilder
     {
+        public IRequestSpecification RequestSpecification { get; }
+
+        public AsyncEnumerableSpecimenBuilder(IRequestSpecification requestSpecification)
+        {
+            RequestSpecification = requestSpecification ?? throw new ArgumentNullException(nameof(requestSpecification));
+        }
+
+        public AsyncEnumerableSpecimenBuilder() : this (new AsyncEnumerableRequestSpecification()) {}
+
         public object Create(object request, ISpecimenContext context)
         {
             if (context is null)
@@ -20,25 +29,25 @@ namespace Kralizek.AutoFixture.Extensions.Kernel
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (request is Type { IsGenericType: true } type && type.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>))
+            if (request is not Type type || !RequestSpecification.IsSatisfiedBy(request))
             {
-                var typeArgument = type.GenericTypeArguments[0];
-
-                var arrayType = typeArgument.MakeArrayType();
-
-                var items = context.Resolve(arrayType);
-
-                var instance = Activator.CreateInstance(typeof(SynchronousAsyncEnumerable<>).MakeGenericType(typeArgument), args: new[] { items });
-
-                if (instance is null)
-                {
-                    return new NoSpecimen();
-                }
-
-                return instance;
+                return new NoSpecimen();
             }
 
-            return new NoSpecimen();
+            var typeArgument = type.GenericTypeArguments[0];
+
+            var arrayType = typeArgument.MakeArrayType();
+
+            var items = context.Resolve(arrayType);
+
+            var instance = Activator.CreateInstance(typeof(SynchronousAsyncEnumerable<>).MakeGenericType(typeArgument), args: new[] { items });
+
+            if (instance is null)
+            {
+                return new NoSpecimen();
+            }
+
+            return instance;
         }
 
         private class SynchronousAsyncEnumerable<T> : IAsyncEnumerable<T>
@@ -64,6 +73,14 @@ namespace Kralizek.AutoFixture.Extensions.Kernel
             public ValueTask DisposeAsync() => new ValueTask(Task.CompletedTask);
 
             public ValueTask<bool> MoveNextAsync() => new ValueTask<bool>(Task.FromResult(_enumerator.MoveNext()));
+        }
+
+        public class AsyncEnumerableRequestSpecification : IRequestSpecification
+        {
+            public bool IsSatisfiedBy(object request)
+            {
+                return request is Type { IsGenericType: true } type && type.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>);
+            }
         }
     }
 }
