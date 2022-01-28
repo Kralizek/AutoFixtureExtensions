@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Kralizek.AutoFixture.Extensions.Internal
+namespace Kralizek.AutoFixture.Extensions.Kernel
 {
     public class AsyncEnumerableSpecimenBuilder : ISpecimenBuilder
     {

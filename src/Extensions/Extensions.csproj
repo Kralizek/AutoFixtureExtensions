@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+    <RootNamespace>Kralizek.AutoFixture.Extensions</RootNamespace>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageTags>autofixture;unit testing;test;extensions</PackageTags>
+    <Description>An extension package to AutoFixture to contains helpers without any extra dependency.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.15.0" />
+  </ItemGroup>
+
+</Project>
