@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageTags>autofixture;unit testing;test;service-provider</PackageTags>
+    <Description>An extension to AutoFixture to easily use services registered using Microsoft.Extensions.DependencyInjection.</Description>
+  </PropertyGroup>
+
+</Project>

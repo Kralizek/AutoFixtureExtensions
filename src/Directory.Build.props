@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <RootNamespace>Kralizek.AutoFixture.Extensions</RootNamespace>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>$(RootNamespace).$(MSBuildProjectName)</AssemblyName>
   </PropertyGroup>
