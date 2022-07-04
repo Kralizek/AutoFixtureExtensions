@@ -1,3 +1,4 @@
+using AutoFixture.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Tests;
@@ -29,8 +30,8 @@ internal static class FixtureHelpers
             ConfigureMembers = true,
             GenerateDelegates = true
         });
-        
-        fixture.Register<IServiceCollection>(() => new ServiceCollection());
+
+        fixture.Customizations.Add(new TypeRelay(typeof(IServiceCollection), typeof(ServiceCollection)));
 
         fixture.Customize<IServiceProvider>(o => o.FromFactory((IServiceCollection svc) => svc.BuildServiceProvider()));
 
