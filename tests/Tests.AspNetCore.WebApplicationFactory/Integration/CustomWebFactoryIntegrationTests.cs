@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,19 +9,19 @@ using NUnit.Framework;
 
 namespace Tests.Integration
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class TestAutoDataAttribute : AutoDataAttribute
-    {
-        public TestAutoDataAttribute() : base(() => new Fixture().AddWebApplicationFactorySupport<TestWebSite.Startup>(b => b.UseSolutionRelativeContentRoot("helpers"))) { }
-    }
-
     [TestFixture]
-    public class IntegrationTests
+    public class CustomWebFactoryIntegrationTests
     {
+        [AttributeUsage(AttributeTargets.Method)]
+        public class TestAutoDataAttribute : AutoDataAttribute
+        {
+            public TestAutoDataAttribute() : base(() => new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>()) { }
+        }
+
         [Test]
         public async Task Should_work_with_no_auto_data_attribute()
         {
-            var fixture = new Fixture().AddWebApplicationFactorySupport<TestWebSite.Startup>(b => b.UseSolutionRelativeContentRoot("helpers"));
+            var fixture = new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>();
 
             var message = fixture.Create<string>();
 
@@ -39,7 +39,7 @@ namespace Tests.Integration
         [Test, AutoData]
         public async Task Should_work_with_basic_auto_data_attribute(IFixture fixture, string message)
         {
-            fixture.AddWebApplicationFactorySupport<TestWebSite.Startup>(b => b.UseSolutionRelativeContentRoot("helpers"));
+            fixture.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>();
 
             var http = fixture.Create<HttpClient>();
 

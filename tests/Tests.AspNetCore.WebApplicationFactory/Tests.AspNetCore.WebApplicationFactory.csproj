@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -15,10 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\helpers\AspNetCore\TestWebSite\TestWebSite.csproj" />
     <ProjectReference Include="..\..\src\AspNetCore.WebApplicationFactory\AspNetCore.WebApplicationFactory.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Integration\" />
   </ItemGroup>
 
 </Project>

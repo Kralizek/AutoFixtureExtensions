@@ -11,10 +11,10 @@ namespace Tests.Internal
     public class WebApplicationFactoryCustomizationTests
     {
         [Test, CustomAutoData]
-        public void Constructor_does_not_accept_nulls(GuardClauseAssertion assertion) => assertion.Verify(typeof(WebApplicationFactoryCustomization<TestWebSite.Startup>));
+        public void Constructor_does_not_accept_nulls(GuardClauseAssertion assertion) => assertion.Verify(typeof(WebApplicationFactoryCustomization<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>));
 
         [Test, CustomAutoData]
-        public void Customize_injects_instance_of_WebApplicationFactory(WebApplicationFactoryCustomization<TestWebSite.Startup> sut, IFixture fixture)
+        public void Customize_injects_instance_of_WebApplicationFactory(WebApplicationFactoryCustomization<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup> sut, IFixture fixture)
         {
             sut.Customize(fixture);
 
@@ -22,7 +22,7 @@ namespace Tests.Internal
         }
 
         [Test, CustomAutoData]
-        public void Multiple_requests_for_WebApplicationFactory_return_same_instance(WebApplicationFactoryCustomization<TestWebSite.Startup> sut, IFixture fixture)
+        public void Multiple_requests_for_WebApplicationFactory_return_same_instance(WebApplicationFactoryCustomization<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup> sut, IFixture fixture)
         {
             sut.Customize(fixture);
 
@@ -34,11 +34,11 @@ namespace Tests.Internal
         }
 
         [Test, CustomAutoData]
-        public void Customize_registers_HttpClientSpecimenBuilder(WebApplicationFactoryCustomization<TestWebSite.Startup> sut, IFixture fixture)
+        public void Customize_registers_HttpClientSpecimenBuilder(WebApplicationFactoryCustomization<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup> sut, IFixture fixture)
         {
             sut.Customize(fixture);
 
-            Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<TestWebSite.Startup>>());
+            Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>>());
         }
     }
 }

@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Kralizek.AutoFixture.Extensions.Internal
 {
-    public class HttpClientSpecimenBuilder<TEntryPoint> : ISpecimenBuilder
+    public class HttpClientSpecimenBuilder<TFactory, TEntryPoint> : ISpecimenBuilder
+        where TFactory : WebApplicationFactory<TEntryPoint>
         where TEntryPoint : class
     {
         public HttpClientSpecimenBuilder(IRequestSpecification requestSpecification)
@@ -34,7 +35,7 @@ namespace Kralizek.AutoFixture.Extensions.Internal
                 return new NoSpecimen();
             }
 
-            var factory = context.Create<WebApplicationFactory<TEntryPoint>>();
+            var factory = context.Create<TFactory>();
 
             return factory.CreateClient();
         }
