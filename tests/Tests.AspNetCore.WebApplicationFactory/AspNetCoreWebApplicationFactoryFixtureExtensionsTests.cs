@@ -2,6 +2,7 @@ using AutoFixture;
 using Kralizek.AutoFixture.Extensions.Internal;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
+// ReSharper disable InvokeAsExtensionMethod
 
 namespace Tests
 {
@@ -16,7 +17,20 @@ namespace Tests
             {
                 Assert.That(() => fixture.Create<WebApplicationFactory<TestWebSite.Startup>>(), Throws.Nothing);
 
-                Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<TestWebSite.Startup>>());
+                Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>>());
+            });
+        }
+
+        [Test, CustomAutoData]
+        public void AddWebApplicationFactorySupport_registers_customization_with_custom_factory(IFixture fixture)
+        {
+            AspNetCoreWebApplicationFactoryFixtureExtensions.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(fixture);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(() => fixture.Create<CustomWebApplicationFactory>(), Throws.Nothing);
+
+                Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<CustomWebApplicationFactory, TestWebSite.Startup>>());
             });
         }
     }

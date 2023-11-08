@@ -15,13 +15,13 @@ namespace Tests.Internal
         [Test, CustomAutoData]
         public void Constructor_is_guarded(GuardClauseAssertion assertion)
         {
-            assertion.Verify(typeof(HttpClientSpecimenBuilder<TestWebSite.Startup>).GetConstructors());
+            assertion.Verify(typeof(HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>).GetConstructors());
         }
 
         [Test, CustomAutoData]
         public void RequestSpecification_exposes_passed_specification(IRequestSpecification requestSpecification)
         {
-            var sut = new HttpClientSpecimenBuilder<TestWebSite.Startup>(requestSpecification);
+            var sut = new HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>(requestSpecification);
 
             Assert.That(sut.RequestSpecification, Is.SameAs(requestSpecification));
         }
@@ -29,7 +29,7 @@ namespace Tests.Internal
         [Test, CustomAutoData]
         public void Default_RequestSpecification_is_HttpClientRequestSpecification()
         {
-            var sut = new HttpClientSpecimenBuilder<TestWebSite.Startup>();
+            var sut = new HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>();
 
             Assert.That(sut.RequestSpecification, Is.InstanceOf<HttpClientRequestSpecification>());
         }
@@ -37,11 +37,11 @@ namespace Tests.Internal
         [Test, CustomAutoData]
         public void Create_is_guarded(GuardClauseAssertion assertion)
         {
-            assertion.Verify(typeof(HttpClientSpecimenBuilder<TestWebSite.Startup>).GetMethod(nameof(HttpClientSpecimenBuilder<TestWebSite.Startup>.Create)));
+            assertion.Verify(typeof(HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>).GetMethod(nameof(HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup>.Create)));
         }
 
         [Test, CustomAutoData]
-        public void Create_returns_HttpClient_if_requested(HttpClientSpecimenBuilder<TestWebSite.Startup> sut, IFixture fixture)
+        public void Create_returns_HttpClient_if_requested(HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup> sut, IFixture fixture)
         {
             fixture.Inject(new WebApplicationFactory<TestWebSite.Startup>().WithWebHostBuilder(b => b.UseSolutionRelativeContentRoot("")));
 
@@ -51,7 +51,7 @@ namespace Tests.Internal
         }
 
         [Test, CustomAutoData]
-        public void Create_returns_NoSpecimen_if_request_is_invalid(HttpClientSpecimenBuilder<TestWebSite.Startup> sut, SpecimenContext context)
+        public void Create_returns_NoSpecimen_if_request_is_invalid(HttpClientSpecimenBuilder<WebApplicationFactory<TestWebSite.Startup>, TestWebSite.Startup> sut, SpecimenContext context)
         {
             var result = sut.Create(typeof(object), context);
 

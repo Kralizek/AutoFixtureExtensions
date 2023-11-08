@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Kralizek.AutoFixture.Extensions.Internal
 {
-    public class WebApplicationFactoryCustomization<TEntryPoint> : ICustomization
+    public class WebApplicationFactoryCustomization<TFactory, TEntryPoint> : ICustomization
+        where TFactory : WebApplicationFactory<TEntryPoint>, new()
         where TEntryPoint : class
     {
         private readonly Action<IWebHostBuilder> _configuration;
@@ -17,9 +18,9 @@ namespace Kralizek.AutoFixture.Extensions.Internal
 
         public void Customize(IFixture fixture)
         {
-            fixture.Inject(new WebApplicationFactory<TEntryPoint>().WithWebHostBuilder(_configuration));
+            fixture.Inject(new TFactory().WithWebHostBuilder(_configuration));
 
-            fixture.Customizations.Add(new HttpClientSpecimenBuilder<TEntryPoint>());
+            fixture.Customizations.Add(new HttpClientSpecimenBuilder<TFactory, TEntryPoint>());
         }
     }
 }
