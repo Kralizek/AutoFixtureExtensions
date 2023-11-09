@@ -4,23 +4,26 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.NUnit3;
+using Microsoft.AspNetCore.TestHost;
 using NUnit.Framework;
 
 namespace Tests.Integration
 {
     [TestFixture]
-    public class CustomWebFactoryIntegrationTests
+    public class InstanceCustomWebFactoryIntegrationTests
     {
         [AttributeUsage(AttributeTargets.Method)]
         public class TestAutoDataAttribute : AutoDataAttribute
         {
-            public TestAutoDataAttribute() : base(() => new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>()) { }
+            public TestAutoDataAttribute() : base(() => new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(new CustomWebApplicationFactory())) { }
         }
 
         [Test]
         public async Task Should_work_with_no_auto_data_attribute()
         {
-            var fixture = new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>();
+            var instance = new CustomWebApplicationFactory();
+            
+            var fixture = new Fixture().AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(instance);
 
             var message = fixture.Create<string>();
 
@@ -38,7 +41,9 @@ namespace Tests.Integration
         [Test, AutoData]
         public async Task Should_work_with_basic_auto_data_attribute(IFixture fixture, string message)
         {
-            fixture.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>();
+            var instance = new CustomWebApplicationFactory();
+            
+            fixture.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(instance);
 
             var http = fixture.Create<HttpClient>();
 

@@ -15,6 +15,12 @@ namespace AutoFixture
         {
             return AddWebApplicationFactorySupport<WebApplicationFactory<TEntryPoint>, TEntryPoint>(fixture, null, configuration ?? EmptyAction);
         }
+        
+        public static IFixture AddWebApplicationFactorySupport<TEntryPoint>(this IFixture fixture, WebApplicationFactory<TEntryPoint> instance)
+            where TEntryPoint : class
+        {
+            return AddWebApplicationFactorySupport<WebApplicationFactory<TEntryPoint>, TEntryPoint>(fixture, instance, EmptyAction);
+        }
 
         public static IFixture AddWebApplicationFactorySupport<TFactory, TEntryPoint>(this IFixture fixture)
             where TFactory : WebApplicationFactory<TEntryPoint>, new()
