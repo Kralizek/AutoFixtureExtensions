@@ -33,5 +33,33 @@ namespace Tests
                 Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<CustomWebApplicationFactory, TestWebSite.Startup>>());
             });
         }
+        
+        [Test, CustomAutoData]
+        public void AddWebApplicationFactorySupport_registers_customization_with_instance(IFixture fixture)
+        {
+            var instance = new CustomWebApplicationFactory();
+            
+            AspNetCoreWebApplicationFactoryFixtureExtensions.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(fixture, instance);
+
+            Assert.Multiple(() =>
+            {
+               
+                Assert.That(() => fixture.Create<CustomWebApplicationFactory>(), Throws.Nothing);
+
+                Assert.That(fixture.Customizations, Has.Exactly(1).InstanceOf<HttpClientSpecimenBuilder<CustomWebApplicationFactory, TestWebSite.Startup>>());
+            });
+        }
+
+        [Test, CustomAutoData]
+        public void AddWebApplicationFactorySupport_returns_registered_instance(IFixture fixture)
+        {
+            var instance = new CustomWebApplicationFactory();
+            
+            AspNetCoreWebApplicationFactoryFixtureExtensions.AddWebApplicationFactorySupport<CustomWebApplicationFactory, TestWebSite.Startup>(fixture, instance);
+
+            var factory = fixture.Create<CustomWebApplicationFactory>();
+            
+            Assert.That(factory, Is.SameAs(instance));
+        }
     }
 }
