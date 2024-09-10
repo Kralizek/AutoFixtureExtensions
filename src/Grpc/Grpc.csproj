@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Core.Testing" Version="2.37.0" />
+    <PackageReference Include="Grpc.Core.Testing" Version="2.46.6" />
   </ItemGroup>
 
 </Project>
