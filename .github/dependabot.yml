@@ -1,18 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/src"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "nuget"
-    directory: "/samples"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "nuget"
-    directory: "/tests"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "nuget"
-    directory: "/helpers"
+    directories:
+      - "/src"
+      - "/samples"
+      - "/tests"
+      - "/helpers"
     schedule:
       interval: "weekly"
