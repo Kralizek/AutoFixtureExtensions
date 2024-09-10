@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <RootNamespace>Sample</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+  </ItemGroup>
+</Project>
