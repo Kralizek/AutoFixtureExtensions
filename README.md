@@ -16,5 +16,8 @@ The following packages are available:
 * **[Kralizek.AutoFixture.Extensions.ServiceProvider](src/ServiceProvider)**<br/>
   An integration between AutoFixture and [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection) to resolve registered services.
 
+* **[Kralizek.AutoFixture.Extensions.Bogus](src/Bogus)**<br/>
+  A library that allows the usage of [Bogus](https://github.com/bchavez/Bogus) to generate fake data in the AutoFixture context.
+
 ## License
 The content of this repository is licensed under the [MIT license](https://github.com/Kralizek/AutoFixtureExtensions/blob/master/LICENSE.txt).
