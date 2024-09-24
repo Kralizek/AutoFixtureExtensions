@@ -3,8 +3,5 @@ updates:
   - package-ecosystem: "nuget"
     directories:
       - "/src/**"
-      - "/samples/**"
-      - "/tests/**"
-      - "/helpers/**"
     schedule:
       interval: "weekly"
