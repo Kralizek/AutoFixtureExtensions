@@ -1,7 +1,9 @@
 # AutoFixture Extensions
+
 This repository contains a set of small extension packages to make the life of AutoFixture users easier.
 
 ## Packages
+
 The following packages are available:
 
 * **[Kralizek.AutoFixture.Extensions.MockHttp](src/MockHttp)**<br/>
@@ -19,5 +21,9 @@ The following packages are available:
 * **[Kralizek.AutoFixture.Extensions.Bogus](src/Bogus)**<br/>
   A library that allows the usage of [Bogus](https://github.com/bchavez/Bogus) to generate fake data in the AutoFixture context.
 
+* **[Kralizek.AutoFixture.Extensions.AspNetCore.RazorPages](src/AspNetCore.RazorPages)**<br/>
+  A library that enables the possibility for AutoFixture to create classes inheriting from `PageModel`.
+
 ## License
+
 The content of this repository is licensed under the [MIT license](https://github.com/Kralizek/AutoFixtureExtensions/blob/master/LICENSE.txt).

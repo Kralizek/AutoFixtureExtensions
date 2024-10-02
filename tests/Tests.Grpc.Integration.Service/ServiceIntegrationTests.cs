@@ -50,7 +50,7 @@ namespace Tests
 
             foreach (var req in requests)
             {
-                StringAssert.Contains(req.Name, response.Message);
+                Assert.That(response.Message, Does.Contain(req.Name));
             }
         }
 
