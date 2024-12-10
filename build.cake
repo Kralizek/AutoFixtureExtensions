@@ -42,25 +42,25 @@ Task("Version")
 Task("Restore")
     .Does<BuildState>(state =>
 {
-    var settings = new DotNetCoreRestoreSettings
+    var settings = new DotNetRestoreSettings
     {
 
     };
 
-    DotNetCoreRestore(state.Paths.SolutionFile.ToString(), settings);
+    DotNetRestore(state.Paths.SolutionFile.ToString(), settings);
 });
 
 Task("Build")
     .IsDependentOn("Restore")
     .Does<BuildState>(state => 
 {
-    var settings = new DotNetCoreBuildSettings
+    var settings = new DotNetBuildSettings
     {
         Configuration = "Debug",
         NoRestore = true
     };
 
-    DotNetCoreBuild(state.Paths.SolutionFile.ToString(), settings);
+    DotNetBuild(state.Paths.SolutionFile.ToString(), settings);
 });
 
 Task("RunTests")
@@ -95,16 +95,16 @@ Task("RunTests")
                                         .WithFilter("-:Tests*")
                                         .WithFilter("-:TestUtils");
 
-                var settings = new DotNetCoreTestSettings
+                var settings = new DotNetTestSettings
                 {
                     NoBuild = true,
                     NoRestore = true,
-                    Logger = $"trx;LogFileName={testResultFile.FullPath}",
+                    Loggers = [$"trx;LogFileName={testResultFile.FullPath}"],
                     Filter = "TestCategory!=External",
                     Framework = framework
                 };
 
-                DotCoverCover(c => c.DotNetCoreTest(projectFile, settings), coverageResultFile, dotCoverSettings);
+                DotCoverCover(c => c.DotNetTest(projectFile, settings), coverageResultFile, dotCoverSettings);
             }
             catch (Exception ex)
             {
@@ -190,7 +190,7 @@ Task("PackLibraries")
     .IsDependentOn("Restore")
     .Does<BuildState>(state =>
 {
-    var settings = new DotNetCorePackSettings
+    var settings = new DotNetPackSettings
     {
         Configuration = "Release",
         NoRestore = true,
@@ -199,7 +199,7 @@ Task("PackLibraries")
         ArgumentCustomization = args => args.Append($"-p:SymbolPackageFormat=snupkg -p:Version={state.Version.PackageVersion}")
     };
 
-    DotNetCorePack(state.Paths.SolutionFile.ToString(), settings);
+    DotNetPack(state.Paths.SolutionFile.ToString(), settings);
 });
 
 Task("Pack")
