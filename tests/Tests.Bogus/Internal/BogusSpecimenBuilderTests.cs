@@ -5,7 +5,7 @@ using Bogus;
 using Kralizek.AutoFixture.Extensions.Internal;
 using Moq;
 
-namespace Tests.Bogus.Internal
+namespace Tests.Internal
 {
     [TestFixture]
     [TestOf(typeof(BogusSpecimenBuilder<>))]

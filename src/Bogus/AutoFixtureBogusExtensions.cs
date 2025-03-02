@@ -15,5 +15,12 @@ namespace AutoFixture
             
             return fixture;
         }
+        
+        public static TProperty UseAutoFixture<TProperty>(this Faker _, IFixture fixture) where TProperty : class
+        {
+            ArgumentNullException.ThrowIfNull(fixture);
+
+            return fixture.Create<TProperty>();
+        }
     }
 }
