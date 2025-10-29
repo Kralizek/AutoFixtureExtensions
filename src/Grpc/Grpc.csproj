@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.Core.Testing" Version="2.46.6" />
+    <PackageReference Include="Google.Protobuf" Version="3.33.0" />
   </ItemGroup>
 
 </Project>

@@ -17,16 +17,17 @@ namespace Kralizek.AutoFixture.Extensions
 
         public void Customize(IFixture fixture)
         {
-            if (fixture is null)
-            {
-                throw new ArgumentNullException(nameof(fixture));
-            }
+            ArgumentNullException.ThrowIfNull(fixture);
 
             fixture.Customizations.Add(new TypeRelay(typeof(IAsyncStreamReader<>), typeof(MockAsyncStreamReader<>)));
 
             fixture.Customizations.Add(new GrpcAsyncCallSpecimenBuilder(_options.CallParameters));
 
             fixture.Customize<ServerCallContext>(o => o.FromFactory(_options.ServerCallContextFactory));
+
+            fixture.Behaviors.Add(new RepeatedFieldBehavior());
+    
+            fixture.Behaviors.Add(new MapFieldBehavior());
         }
     }
 }
