@@ -72,5 +72,16 @@ namespace Tests
                 Mock.Get(responseStream).Verify(p => p.WriteAsync(It.Is<HelloReply>(r => r.Message.EndsWith(req.Name))), Times.Once());
             }
         }
+
+        [Test, ServiceAutoData]
+        public async Task Service_greets_many_senders(GreeterService sut, ServerCallContext context, ManyHellosRequest request)
+        {
+            var response = await sut.SayHelloMany(request, context);
+
+            foreach (var name in request.Names)
+            {
+                Assert.That(response.Messages, Does.Contain($"Hello {name}"));
+            }
+        }
     }
 }

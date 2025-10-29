@@ -52,5 +52,13 @@ namespace TestGrpc
 
             return new HelloReply { Message = FormatMessage(string.Join(", ", names)) };
         }
+
+        public override Task<ManyHellosReply> SayHelloMany(ManyHellosRequest request, ServerCallContext context)
+        {
+            var messages = request.Names.Select(name => FormatMessage(name)).ToList();
+            var reply = new ManyHellosReply();
+            reply.Messages.AddRange(messages);
+            return Task.FromResult(reply);
+        }
     }
 }
