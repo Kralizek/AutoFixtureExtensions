@@ -1,0 +1,178 @@
+name: Build & Package
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'samples/**'
+      - 'global.json'
+      - '*.sln'
+      - '**/*.csproj'
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'src/**'
+      - 'tests/**'
+      - 'samples/**'
+      - 'global.json'
+      - '*.sln'
+      - '**/*.csproj'
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch full history for GitVersion
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      
+      - name: Install tools
+        run: |
+          dotnet tool install --global dotnet-coverage --version 17.9.3
+          dotnet tool install --global GitVersion.Tool --version 5.12.0
+      
+      - name: Determine Version
+        id: gitversion
+        run: |
+          dotnet gitversion /output json | tee gitversion.json
+          echo "semver=$(jq -r .SemVer gitversion.json)" >> $GITHUB_OUTPUT
+          echo "fullsemver=$(jq -r .FullSemVer gitversion.json)" >> $GITHUB_OUTPUT
+          echo "Package version: $(jq -r .SemVer gitversion.json)"
+          echo "Build version: $(jq -r .FullSemVer gitversion.json)"
+      
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      
+      - name: Restore dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build --no-restore --configuration Release -warnaserror
+      
+      - name: Test
+        run: |
+          dotnet test --no-build --configuration Release --verbosity normal \
+            --filter "TestCategory!=External" \
+            --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" \
+            --logger "GitHubActions" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
+
+      - name: Merge coverage reports
+        run: |
+          dotnet coverage merge outputs/coverage/ -r -f cobertura -o outputs/coverage/cobertura.xml
+        continue-on-error: true
+
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: 'outputs/coverage/cobertura.xml'
+          badge: true
+          format: 'markdown'
+          output: 'both'
+        continue-on-error: true
+
+      - name: Write to Job Summary
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: outputs/tests/**/TestResults.xml
+        continue-on-error: true
+        
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: outputs/coverage/cobertura.xml
+        continue-on-error: true
+        
+      - name: Upload coverage to Coveralls
+        if: success() && !github.event.pull_request
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
+            dotnet tool install --global csmacnz.coveralls --version 1.1.0
+            csmacnz.coveralls --opencover \
+              -i outputs/coverage/cobertura.xml \
+              --repoToken $COVERALLS_REPO_TOKEN \
+              --commitId $GITHUB_SHA \
+              --commitBranch ${GITHUB_REF#refs/heads/} \
+              --commitAuthor "$GITHUB_ACTOR" \
+              --commitMessage "${{ github.event.head_commit.message }}"
+          fi
+        continue-on-error: true
+      
+      - name: Pack libraries
+        run: |
+          dotnet pack --no-build --configuration Release \
+            --output outputs/packages \
+            --include-symbols \
+            -p:SymbolPackageFormat=snupkg \
+            -p:Version=${{ steps.gitversion.outputs.semver }}
+        
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: nuget-packages
+          path: |
+            outputs/packages/*.nupkg
+            outputs/packages/*.snupkg
+
+  publish:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    if: success() && startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download NuGet packages
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages
+        path: outputs/packages/
+        
+    - name: Publish to NuGet.org
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet nuget push "outputs/packages/*.nupkg" \
+          --api-key $NUGET_API_KEY \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate
+      
+    - name: Publish to GitHub Packages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet nuget push "outputs/packages/*.nupkg" \
+          --api-key $GITHUB_TOKEN \
+          --source https://nuget.pkg.github.com/Kralizek/index.json \
+          --skip-duplicate
+
