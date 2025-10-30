@@ -114,15 +114,11 @@ jobs:
         
       - name: Upload coverage to Coveralls
         if: success() && !github.event.pull_request
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
-            dotnet tool install --global coveralls.net
-            csmacnz.Coveralls --multiple \
-              --input outputs/coverage/cobertura.xml \
-              --format cobertura
-          fi
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          file: outputs/coverage/cobertura.xml
+          format: cobertura
         continue-on-error: true
 
   publish:
