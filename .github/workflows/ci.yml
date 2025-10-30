@@ -75,7 +75,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release -warnaserror
       
       - name: Test
-        run: dotnet test --no-build --configuration Release --verbosity normal --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" --logger "GitHubActions" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
+        run: dotnet test --no-build --configuration Release --verbosity normal --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" --logger "GitHubActions" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory "$GITHUB_WORKSPACE/outputs/coverage" --settings .runsettings
 
       - name: Merge coverage reports
         run: |
