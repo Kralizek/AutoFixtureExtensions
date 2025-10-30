@@ -13,6 +13,8 @@ on:
       - 'global.json'
       - '*.sln'
       - '**/*.csproj'
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - master
