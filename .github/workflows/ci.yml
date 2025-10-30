@@ -118,14 +118,10 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: |
           if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
-            dotnet tool install --global csmacnz.coveralls --version 1.1.0
-            csmacnz.coveralls --opencover \
-              -i outputs/coverage/cobertura.xml \
-              --repoToken $COVERALLS_REPO_TOKEN \
-              --commitId $GITHUB_SHA \
-              --commitBranch ${GITHUB_REF#refs/heads/} \
-              --commitAuthor "$GITHUB_ACTOR" \
-              --commitMessage "${{ github.event.head_commit.message }}"
+            dotnet tool install --global coveralls.net
+            coveralls.net --multiple \
+              --input outputs/coverage/cobertura.xml \
+              --format cobertura
           fi
         continue-on-error: true
       
