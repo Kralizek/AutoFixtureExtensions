@@ -44,6 +44,7 @@ jobs:
         with:
           dotnet-version: |
             8.0.x
+            9.0.x
       
       - name: Install tools
         run: |
@@ -74,7 +75,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release -warnaserror
       
       - name: Test
-        run: dotnet test --no-build --verbosity normal --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" --logger "GitHubActions" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
+        run: dotnet test --no-build --configuration Release --verbosity normal --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" --logger "GitHubActions" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
 
       - name: Merge coverage reports
         run: |
@@ -134,6 +135,7 @@ jobs:
       with:
         dotnet-version: |
           8.0.x
+          9.0.x
     
     - name: Install tools
       run: |
