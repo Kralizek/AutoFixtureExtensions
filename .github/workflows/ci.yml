@@ -42,7 +42,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          dotnet-version: |
+            8.0.x
+            9.0.x
       
       - name: Install tools
         run: |
@@ -73,13 +75,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release -warnaserror
       
       - name: Test
-        run: |
-          dotnet test --no-build --configuration Release --verbosity normal \
-            --filter "TestCategory!=External" \
-            --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/tests/{assembly}/TestResults.xml;MethodFormat=Full" \
-            --logger "GitHubActions" \
-            --collect:"XPlat Code Coverage" \
-            --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
+        run: dotnet test --no-build --verbosity normal --logger "junit;LogFilePath=$GITHUB_WORKSPACE/outputs/test-results/{assembly}.xml;MethodFormat=Full" --logger "GitHubActions" --no-build --no-restore --collect:"XPlat Code Coverage" --results-directory "$GITHUB_WORKSPACE/outputs/coverage"
 
       - name: Merge coverage reports
         run: |
@@ -103,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: outputs/tests/**/TestResults.xml
+          path: outputs/test-results/**/*.xml
         continue-on-error: true
         
       - name: Upload coverage report
@@ -120,6 +116,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           file: outputs/coverage/cobertura.xml
           format: cobertura
+          base-path: ${{ github.workspace }}
+          flag-name: ubuntu-latest
         continue-on-error: true
 
   publish:
@@ -135,7 +133,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        global-json-file: global.json
+        dotnet-version: |
+          8.0.x
+          9.0.x
     
     - name: Install tools
       run: |
