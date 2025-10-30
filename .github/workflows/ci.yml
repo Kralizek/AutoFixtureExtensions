@@ -155,19 +155,12 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
-    
-    - name: Restore dependencies
-      run: dotnet restore
-    
-    - name: Build
-      run: dotnet build --no-restore --configuration Release -warnaserror
-      
+
     - name: Pack libraries
       run: |
-        dotnet pack --no-build --configuration Release \
+        dotnet pack --configuration Release \
           --output outputs/packages \
-          --include-symbols \
-          -p:SymbolPackageFormat=snupkg \
+          -p:ContinuousIntegrationBuild=true \
           -p:Version=${{ steps.gitversion.outputs.semver }}
     
     - name: Upload packages as artifacts
