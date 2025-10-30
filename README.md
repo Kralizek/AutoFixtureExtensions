@@ -1,5 +1,7 @@
 # AutoFixture Extensions
 
+[![Coverage Status](https://coveralls.io/repos/github/Kralizek/AutoFixtureExtensions/badge.svg?branch=master)](https://coveralls.io/github/Kralizek/AutoFixtureExtensions?branch=master)
+
 This repository contains a set of small extension packages to make the life of AutoFixture users easier.
 
 ## Packages
