@@ -1,0 +1,121 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  CONFIGURATION: Release
+
+jobs:
+  publish:
+    name: Validate, pack, and publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Determine package version
+        id: version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "release" ]; then
+            if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "Unsupported release tag: $RELEASE_TAG"
+              exit 1
+            fi
+            version="${RELEASE_TAG#v}"
+          else
+            version="0.0.0-preview.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration $CONFIGURATION --no-restore --warnaserror -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Test
+        run: dotnet test --configuration $CONFIGURATION --no-build --logger GitHubActions
+
+      - name: Pack
+        run: dotnet pack --configuration $CONFIGURATION --no-build --output ./artifacts/packages -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: nuget-packages
+          path: |
+            ./artifacts/packages/*.nupkg
+            ./artifacts/packages/*.snupkg
+          if-no-files-found: error
+
+      - name: Configure GitHub Packages source
+        if: github.event_name == 'release'
+        run: >-
+          dotnet nuget add source
+          "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+          --name github
+          --username "${{ github.actor }}"
+          --password "${{ github.token }}"
+          --store-password-in-clear-text
+
+      - name: Publish to GitHub Packages
+        if: github.event_name == 'release'
+        run: >-
+          dotnet nuget push
+          "./artifacts/packages/*.nupkg"
+          --source github
+          --api-key "${{ github.token }}"
+          --skip-duplicate
+
+      - name: Log in to NuGet.org
+        if: github.event_name == 'release'
+        id: nuget-login
+        uses: nuget/login@v1
+        with:
+          user: Kralizek
+
+      - name: Publish to NuGet.org
+        if: github.event_name == 'release'
+        run: >-
+          dotnet nuget push
+          "./artifacts/packages/*.nupkg"
+          --source https://api.nuget.org/v3/index.json
+          --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}"
+          --skip-duplicate
+
+      - name: Attach packages to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: >-
+          gh release upload "$RELEASE_TAG"
+          ./artifacts/packages/*.nupkg
+          ./artifacts/packages/*.snupkg
+          --repo "${{ github.repository }}"
+          --clobber
